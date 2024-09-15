@@ -128,7 +128,7 @@ private fun BillForm(
                 isSingleLine = true,
                 onAction = KeyboardActions() {
                     if (!validState) return@KeyboardActions
-                    onvaluechanged(totalBillState.value.trim())
+                    onvaluechanged(  totalBillState.value.trim())
                     keyboardController?.hide()
                 }
             )
