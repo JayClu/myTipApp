@@ -2,6 +2,7 @@ package hoangloc.mytipapp
 
 import android.os.Bundle
 import android.support.v4.os.IResultReceiver2.Default
+import android.util.Log
 import android.view.Surface
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -90,20 +93,32 @@ fun TopHeadler(totalPerPerson: Double = 0.0) {
 @Preview
 @Composable
 fun MainContent() {
+    BillForm(){
+        billAmt ->
+        Log.d("AMT","MainContent: ${billAmt.toInt() * 100}")
+    }
+}
+
+@Composable
+private fun BillForm(
+    modifier: Modifier = Modifier,
+    onvaluechanged: (String) -> Unit = {},
+) {
     val totalBillState = remember {
-        mutableStateOf("0")
+        mutableStateOf("")
     }
     val validState = remember(totalBillState.value) {
         totalBillState.value.trim().isNotEmpty()
     }
     val keyboardController = LocalSoftwareKeyboardController.current
+
     Surface(
         modifier = Modifier
             .padding(2.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(corner = CornerSize(8.dp)),
         border = BorderStroke(width = 1.dp, color = Color.LightGray)
-        ){
+    ) {
         Column {
 
             InputField(
@@ -113,22 +128,18 @@ fun MainContent() {
                 isSingleLine = true,
                 onAction = KeyboardActions() {
                     if (!validState) return@KeyboardActions
-                        //todo- onvaluechanged
+                    onvaluechanged(totalBillState.value.trim())
                     keyboardController?.hide()
                 }
             )
-            //OutlinedTextField(value = , onValueChange = )
+            //OutlinedTextField(value = , onValueChange = )9
         }
 
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
-    MyTipAppTheme {
-        Myapp {
-            Text(text = "hello again")
-        }
-    }
+fun BillForm(modifier: Modifier = Modifier){
+
 }
+
