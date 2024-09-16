@@ -4,20 +4,28 @@ import android.os.Bundle
 import android.support.v4.os.IResultReceiver2.Default
 import android.util.Log
 import android.view.Surface
+import android.widget.Space
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -39,6 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import hoangloc.mytipapp.components.InputField
 import hoangloc.mytipapp.ui.theme.MyTipAppTheme
+import hoangloc.mytipapp.widgets.RoundIconButton
 
 @ExperimentalComposeUiApi
 class MainActivity : ComponentActivity() {
@@ -119,7 +128,11 @@ private fun BillForm(
         shape = RoundedCornerShape(corner = CornerSize(8.dp)),
         border = BorderStroke(width = 1.dp, color = Color.LightGray)
     ) {
-        Column {
+        Column(
+            modifier = Modifier.padding(6.dp),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start
+        ) {
 
             InputField(
                 valueState = totalBillState,
@@ -132,14 +145,42 @@ private fun BillForm(
                     keyboardController?.hide()
                 }
             )
-            //OutlinedTextField(value = , onValueChange = )9
-        }
+            if (validState) {
+                Row (
+                    modifier = Modifier.padding(3.dp),
+                    horizontalArrangement = Arrangement.Start
+                ){
+                    Text(text = "Split",
+                        modifier = Modifier.align(
+                            alignment = Alignment.CenterVertically
+                        ))
 
+                    Spacer(modifier = Modifier.width(120.dp))
+
+                    Row (
+                        modifier = Modifier.padding(horizontal = 3.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        RoundIconButton(
+                            imageVector = Icons.Default.Remove,
+                            onClick = {
+                                Log.d("Icon","BillForm: Remove Icon Clicked")
+                            })
+
+                        RoundIconButton(
+                            imageVector = Icons.Default.Add,
+                            onClick = {
+                                Log.d("Icon","BillForm: Add Icon Clicked")
+                            })
+                    }
+                }
+            } else {
+                Box() {}
+            }
+        }
     }
 }
-
 @Composable
-fun BillForm(modifier: Modifier = Modifier){
-
+fun BillForm(modifier: Modifier = Modifier) {
 }
 
