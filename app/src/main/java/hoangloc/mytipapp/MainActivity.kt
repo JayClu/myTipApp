@@ -126,6 +126,19 @@ private fun BillForm(
     val sliderPositionState = remember {
         mutableStateOf(0f)
     }
+
+    val tipPercentage = (sliderPositionState.value * 100).toInt()
+
+    val splitByState = remember {
+        mutableStateOf(1)
+    }
+
+    val tipAmountState = remember {
+        mutableStateOf(0.0)
+    }
+
+
+
     Column {//create skeleton for header and main content
         TopHeadler()
 
@@ -153,149 +166,157 @@ private fun BillForm(
                         keyboardController?.hide()
                     }
                 )
-                SplitRow(visible = validState) // Show only when bill is valid
-
-                TipRow(
-                    tipAmount = calculateTip(
-                        sliderPositionState.value,
-                        totalBillState.value.toFloatOrNull() ?: 0f
-                    )
-                )
-
-                TipSlider(sliderPositionState = sliderPositionState)
-                //if (validState) {
-//                Row (
-//                    modifier = Modifier.padding(3.dp),
-//                    horizontalArrangement = Arrangement.Start
-//                ){
-//                    Text(text = "Split",
-//                        modifier = Modifier.align(
-//                            alignment = Alignment.CenterVertically
-//                        ))
+//                SplitRow(visible = validState) // Show only when bill is valid
 //
-//                    Spacer(modifier = Modifier.width(120.dp))
-//
-//                    Row (
-//                        modifier = Modifier.padding(horizontal = 3.dp),
-//                        horizontalArrangement = Arrangement.End
-//                    ) {
-//                        RoundIconButton(
-//                            imageVector = Icons.Default.Remove,
-//                            onClick = {
-//                                Log.d("Icon","BillForm: Remove Icon Clicked")
-//                            })
-//
-//                        Text(text = "2",
-//                            modifier = Modifier
-//                                .align(Alignment.CenterVertically)
-//                                .padding(start = 9.dp, end = 9.dp))
-//
-//                        RoundIconButton(
-//                            imageVector = Icons.Default.Add,
-//                            onClick = {
-//                                Log.d("Icon","BillForm: Add Icon Clicked")
-//                            })
-//                    }
-//                }
-//
-//            //TipRow
-//            Row(
-//                modifier = Modifier.padding(horizontal = 3.dp, vertical = 12.dp)
-//            ){
-//                Text(text = "Tip",
-//                    modifier = Modifier.align(alignment = Alignment.CenterVertically)                            )
-//                Spacer(modifier = Modifier.width(200.dp))
-//                Text(text = "$10",
-//                    modifier = Modifier.align(alignment = Alignment.CenterVertically)
-//
-//
-//                )
-//            }
-//            Column(
-//                verticalArrangement = Arrangement.Center,
-//                horizontalAlignment = Alignment.CenterHorizontally
-//            ) {
-//                Text(text = "%")
-//
-//                Spacer(modifier = Modifier.height(14.dp))
-//
-//                //Slider
-//                Slider(value = sliderPositionState.value,
-//                    valueRange = 0f..100f,
-//                    onValueChange = {
-//                        newVal ->
-//                        sliderPositionState.value = newVal
-//                        Log.d("Slider","newVal: $newVal")
-//                    },
-//                    modifier = Modifier.padding(start = 16.dp, end = 16.dp),
-//                    steps = 5,
-//                    onValueChangeFinished = {
-//                        //Log.d("Finished","${sliderPositionState.value}")
-//                    }
-//
+//                TipRow(
+//                    tipAmount = calculateTip(
+//                        sliderPositionState.value,
+//                        totalBillState.value.toFloatOrNull() ?: 0f
 //                    )
-//            }
-//           // } else {
-//                //Box() {}
-//            //}
+//                )
+//
+//                TipSlider(sliderPositionState = sliderPositionState)
+                if (validState) {
+                Row (
+                    modifier = Modifier.padding(3.dp),
+                    horizontalArrangement = Arrangement.Start
+                ){
+                    Text(text = "Split",
+                        modifier = Modifier.align(
+                            alignment = Alignment.CenterVertically
+                        ))
+
+                    Spacer(modifier = Modifier.width(120.dp))
+
+                    Row (
+                        modifier = Modifier.padding(horizontal = 3.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        RoundIconButton(
+                            imageVector = Icons.Default.Remove,
+                            onClick = {
+                                splitByState.value =
+                                    if (splitByState.value > 1) splitByState.value - 1
+                                else 1
+                            })
+
+                        Text(text = "${splitByState.value}",
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .padding(start = 9.dp, end = 9.dp))
+
+                        RoundIconButton(
+                            imageVector = Icons.Default.Add,
+                            onClick = {
+                                splitByState.value = splitByState.value + 1
+                            })
+                    }
+                }
+
+            //TipRow
+            Row(
+                modifier = Modifier.padding(horizontal = 3.dp, vertical = 12.dp)
+            ){
+                Text(text = "Tip",
+                    modifier = Modifier.align(alignment = Alignment.CenterVertically)                            )
+                Spacer(modifier = Modifier.width(200.dp))
+                Text(text = "$${tipAmountState.value}",
+                    modifier = Modifier.align(alignment = Alignment.CenterVertically)
+
+
+                )
+            }
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = "${tipPercentage} %")
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                //Slider
+                Slider(value = sliderPositionState.value,
+                    onValueChange = {
+                        newVal ->
+                        sliderPositionState.value = newVal
+                        tipAmountState.value = calculateTip(
+                            totalBill = totalBillState.value.toDouble(),
+                            tipPercentage = tipPercentage   )
+                    },
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+                    onValueChangeFinished = {
+                        //Log.d("Finished","${sliderPositionState.value}")
+                    }
+                )
+            }
+            } else {
+                Box() {}
+            }
             }
         }
     }
 }
+
+fun calculateTip(totalBill: Double,
+                 tipPercentage: Int): Double {
+ return if (totalBill > 1 &&
+            totalBill.toString().isNotEmpty())
+     (totalBill * tipPercentage) / 100
+    else 0.0
+}
+
 @Composable
 fun BillForm(modifier: Modifier = Modifier) {
 }
 
 //function for split
-@Composable
-fun SplitRow(visible: Boolean) {
-    if (visible) {
-        Row(
-            modifier = Modifier.padding(3.dp),
-            horizontalArrangement = Arrangement.Start
-        ) {
-            Text(text = "Split", modifier = Modifier.align(Alignment.CenterVertically))
-
-            Spacer(modifier = Modifier.width(120.dp))
-
-            // ... rest of your SplitRow content
-        }
-    }
-}
-
-@Composable
-fun TipRow(tipAmount: Float) {
-    Row(
-        modifier = Modifier.padding(horizontal = 3.dp, vertical = 12.dp)
-    ) {
-        Text(text = "Tip", modifier = Modifier.align(Alignment.CenterVertically))
-        Spacer(modifier = Modifier.width(200.dp))
-        Text(text = "$tipAmount",
-        modifier = Modifier.align(Alignment.CenterVertically))
-    }
-}
-
-@Composable
-fun TipSlider(sliderPositionState: MutableState<Float>) {
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text
-        = "${sliderPositionState.value.toInt()}%")
-        Spacer(modifier = Modifier.height(14.dp))
-        Slider(
-            value = sliderPositionState.value,
-            valueRange = 0f..100f,
-            onValueChange = { newVal ->
-                sliderPositionState.value = newVal
-            },
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp),
-            steps = 15
-        )
-    }
-}
-
-fun calculateTip(tipPercent: Float, billAmount: Float): Float {
-    return billAmount * (tipPercent / 100)
-}
+//@Composable
+//fun SplitRow(visible: Boolean) {
+//    if (visible) {
+//        Row(
+//            modifier = Modifier.padding(3.dp),
+//            horizontalArrangement = Arrangement.Start
+//        ) {
+//            Text(text = "Split", modifier = Modifier.align(Alignment.CenterVertically))
+//
+//            Spacer(modifier = Modifier.width(120.dp))
+//
+//        }
+//    }
+//}
+//
+//@Composable
+//fun TipRow(tipAmount: Float) {
+//    Row(
+//        modifier = Modifier.padding(horizontal = 3.dp, vertical = 12.dp)
+//    ) {
+//        Text(text = "Tip", modifier = Modifier.align(Alignment.CenterVertically))
+//        Spacer(modifier = Modifier.width(200.dp))
+//        Text(text = "$tipAmount",
+//        modifier = Modifier.align(Alignment.CenterVertically))
+//    }
+//}
+//
+//@Composable
+//fun TipSlider(sliderPositionState: MutableState<Float>) {
+//    Column(
+//        verticalArrangement = Arrangement.Center,
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
+//        Text(text
+//        = "${sliderPositionState.value.toInt()}%")
+//        Spacer(modifier = Modifier.height(14.dp))
+//        Slider(
+//            value = sliderPositionState.value,
+//            valueRange = 0f..100f,
+//            onValueChange = { newVal ->
+//                sliderPositionState.value = newVal
+//            },
+//            modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+//            steps = 15
+//        )
+//    }
+//}
+//
+//fun calculateTip(tipPercent: Float, billAmount: Float): Float {
+  //  return billAmount * (tipPercent / 100)
