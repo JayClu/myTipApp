@@ -49,6 +49,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import hoangloc.mytipapp.components.InputField
 import hoangloc.mytipapp.ui.theme.MyTipAppTheme
+import hoangloc.mytipapp.util.calculateTip
+import hoangloc.mytipapp.util.calculateTotalPerPerson
 import hoangloc.mytipapp.widgets.RoundIconButton
 
 @ExperimentalComposeUiApi
@@ -136,11 +138,15 @@ private fun BillForm(
     val tipAmountState = remember {
         mutableStateOf(0.0)
     }
+    val totalPerPersonState = remember {
+        mutableStateOf(0.0)
+    }
+
 
 
 
     Column {//create skeleton for header and main content
-        TopHeadler()
+        TopHeadler(totalPerPersonState.value)
 
         Surface(
             modifier = Modifier
@@ -164,6 +170,7 @@ private fun BillForm(
                         if (!validState) return@KeyboardActions
                         onvaluechanged(totalBillState.value.trim())
                         keyboardController?.hide()
+                        totalPerPersonState.value=totalBillState.value.toDouble()
                     }
                 )
 //                SplitRow(visible = validState) // Show only when bill is valid
@@ -198,6 +205,11 @@ private fun BillForm(
                                 splitByState.value =
                                     if (splitByState.value > 1) splitByState.value - 1
                                 else 1
+
+                                totalPerPersonState.value = calculateTotalPerPerson(
+                                    totalBill = totalBillState.value.toDouble(),
+                                    splitBy = splitByState.value,
+                                    tipPercentage = tipPercentage)
                             })
 
                         Text(text = "${splitByState.value}",
@@ -209,6 +221,11 @@ private fun BillForm(
                             imageVector = Icons.Default.Add,
                             onClick = {
                                 splitByState.value = splitByState.value + 1
+
+                                totalPerPersonState.value = calculateTotalPerPerson(
+                                    totalBill = totalBillState.value.toDouble(),
+                                    splitBy = splitByState.value,
+                                    tipPercentage = tipPercentage)
                             })
                     }
                 }
@@ -242,6 +259,11 @@ private fun BillForm(
                         tipAmountState.value = calculateTip(
                             totalBill = totalBillState.value.toDouble(),
                             tipPercentage = tipPercentage   )
+
+                        totalPerPersonState.value = calculateTotalPerPerson(
+                            totalBill = totalBillState.value.toDouble(),
+                            splitBy = splitByState.value,
+                            tipPercentage = tipPercentage)
                     },
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp),
                     onValueChangeFinished = {
@@ -257,13 +279,7 @@ private fun BillForm(
     }
 }
 
-fun calculateTip(totalBill: Double,
-                 tipPercentage: Int): Double {
- return if (totalBill > 1 &&
-            totalBill.toString().isNotEmpty())
-     (totalBill * tipPercentage) / 100
-    else 0.0
-}
+
 
 @Composable
 fun BillForm(modifier: Modifier = Modifier) {

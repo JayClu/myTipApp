@@ -38,6 +38,8 @@ fun RoundIconButton(
             elevation = CardDefaults.cardElevation(elevation)
             ) {
             Icon(
+                modifier = Modifier.padding(all = 2.dp)
+                    .size(40.dp),
                 imageVector = imageVector,
                 contentDescription = "Plus or minus icon",
                 tint = tint)
