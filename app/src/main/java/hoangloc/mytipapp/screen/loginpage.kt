@@ -50,15 +50,16 @@ fun loginscreen(navController: NavController) {
             fontSize = 20.sp, fontWeight = FontWeight.Light)
 
         Spacer(modifier = Modifier.height(20.dp))
-        OutlinedTextField(value = email, onValueChange = {},
-            label = { Text(text = "Email Address")},
-            singleLine = true)
+        OutlinedTextField(value = email, onValueChange = {
+            email = it
+        },
+            label = { Text(text = "Email Address")})
 
         Spacer(modifier = Modifier.height(20.dp))
-        OutlinedTextField(value = password, onValueChange = {},
-            label = { Text(text = "Password")},
-            singleLine = true,
-            )
+        OutlinedTextField(value = password, onValueChange = {
+            password = it
+        },
+            label = { Text(text = "Password")})
 
         Spacer(modifier = Modifier.height(20.dp))
         Text(text = "Forgot Password?",
