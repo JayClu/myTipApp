@@ -70,4 +70,22 @@ dependencies {
     //Icons
     //implementation("androidx.compose.material:material-icons-core:1.5.1")
     implementation("androidx.compose.material:material-icons-extended:1.7.1")
+
+
+    //Navigation
+    val nav_version = "2.8.1"
+
+    // Jetpack Compose integration
+    implementation("androidx.navigation:navigation-compose:$nav_version")
+
+    // Views/Fragments integration
+    implementation("androidx.navigation:navigation-fragment:$nav_version")
+    implementation("androidx.navigation:navigation-ui:$nav_version")
+
+    // Feature module support for Fragments
+    implementation("androidx.navigation:navigation-dynamic-features-fragment:$nav_version")
+
+    // Testing Navigation
+    androidTestImplementation("androidx.navigation:navigation-testing:$nav_version")
+
 }
